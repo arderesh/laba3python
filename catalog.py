@@ -1,5 +1,5 @@
 from aircraft_part import AircraftPart
-from exceptions import DuplicateIdError, ItemNotFoundError
+from exceptions import DuplicateIdError, ItemNotFoundError, UnsuportedVersion
 from collections.abc import Iterator
 import json
 from dataclasses import asdict
@@ -61,3 +61,16 @@ class Catalog:
 
         with open(path, "w", encoding="utf-8") as f:
             json.dump(dct, f, ensure_ascii=False, indent=4)
+
+    def load(self, path: str) -> None:
+        with open(path, "r", encoding="utf-8") as f:
+            doc = json.load(f)
+
+        if doc["format_version"] != 1:
+            raise UnsuportedVersion("Другая версия формата!")
+
+        new = Catalog()
+        for item in doc["items"]:
+            new.add(AircraftPart(**item))
+
+        self._items = new._items
