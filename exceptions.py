@@ -9,3 +9,6 @@ class DuplicateIdError(CatalogError):
 
 class ItemNotFoundError(CatalogError):
     pass
+
+class UnsuportedVersion(CatalogError):
+    pass
