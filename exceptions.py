@@ -12,3 +12,6 @@ class ItemNotFoundError(CatalogError):
 
 class UnsuportedVersion(CatalogError):
     pass
+
+class BrokenFileError(CatalogError):
+    pass
