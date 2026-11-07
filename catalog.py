@@ -1,5 +1,6 @@
 from aircraft_part import AircraftPart
-from exceptions import DuplicateIdErr, ItemNotFoundErr
+from exceptions import DuplicateIdError, ItemNotFoundError
+from collections.abc import Iterator
 
 
 class Catalog:
@@ -8,17 +9,17 @@ class Catalog:
 
     def add(self, item: AircraftPart) -> None:
         if item.item_id in self._items:
-            raise DuplicateIdErr("Item с таким ID уже сущестувует!")
+            raise DuplicateIdError("Item с таким ID уже сущестувует!")
         self._items[item.item_id] = item
 
     def get(self, item_id: str) -> AircraftPart:
         if item_id not in self._items:
-            raise ItemNotFoundErr("Элемента с таким item_id не существует!")
+            raise ItemNotFoundError("Элемента с таким item_id не существует!")
         return self._items[item_id]
 
     def remove(self, item_id: str) -> None:
         if item_id not in self._items:
-            raise ItemNotFoundErr("Элемента с таким item_id не существует!")
+            raise ItemNotFoundError("Элемента с таким item_id не существует!")
         del self._items[item_id]
 
     def find_by_category(self, category: str) -> list[AircraftPart]:
@@ -42,3 +43,10 @@ class Catalog:
 
     def __len__(self) -> int:
         return len(self._items)
+
+    def __contains__(self, item_id: str) -> bool:
+        return item_id in self._items
+
+    def __iter__(self) -> Iterator[AircraftPart]:
+        """return-ит элементы в порядке добавления"""
+        return iter(self._items.values())

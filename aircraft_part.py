@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from exceptions import InvalidItemErr
+from exceptions import InvalidItemError
 
 @dataclass
 class AircraftPart:
@@ -12,14 +12,14 @@ class AircraftPart:
 
     def __post_init__(self):
         if self.weight <= 0:
-            raise InvalidItemErr("Некорректная масса!")
+            raise InvalidItemError("Некорректная масса!")
         if not self.item_id.strip():
-            raise InvalidItemErr("Идентификатор не должен быть пустым!")
+            raise InvalidItemError("Идентификатор не должен быть пустым!")
         if not self.name.strip():
-            raise InvalidItemErr("Название не должно быть пустым!")
+            raise InvalidItemError("Название не должно быть пустым!")
         if not self.category.strip():
-            raise InvalidItemErr("Категория не должна быть пустой!")
+            raise InvalidItemError("Категория не должна быть пустой!")
         if not self.maker.strip():
-            raise InvalidItemErr("Поле производитель не должно быть пустым!")
-        if self.date <= 0:
-            raise InvalidItemErr("Год не должен быть меньше или равен 0!")
+            raise InvalidItemError("Поле производитель не должно быть пустым!")
+        if self.year <= 0:
+            raise InvalidItemError("Год не должен быть меньше или равен 0!")

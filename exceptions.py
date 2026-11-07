@@ -1,11 +1,11 @@
-class CatalogErr(Exception):
+class CatalogError(Exception):
     pass
 
-class InvalidItemErr(CatalogErr):
+class InvalidItemError(CatalogError):
     pass
 
-class DuplicateIdErr(CatalogErr):
+class DuplicateIdError(CatalogError):
     pass
 
-class ItemNotFoundErr(CatalogErr):
+class ItemNotFoundError(CatalogError):
     pass
