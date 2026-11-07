@@ -6,3 +6,6 @@ class InvalidItemErr(CatalogErr):
 
 class DuplicateIdErr(CatalogErr):
     pass
+
+class ItemNotFoundErr(CatalogErr):
+    pass
