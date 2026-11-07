@@ -1,6 +1,8 @@
 from aircraft_part import AircraftPart
 from exceptions import DuplicateIdError, ItemNotFoundError
 from collections.abc import Iterator
+import json
+from dataclasses import asdict
 
 
 class Catalog:
@@ -50,3 +52,12 @@ class Catalog:
     def __iter__(self) -> Iterator[AircraftPart]:
         """return-ит элементы в порядке добавления"""
         return iter(self._items.values())
+
+    def save(self, path: str) -> None:
+        dct = {"format_version": 1, "items": []}
+
+        for item in self:
+            dct["items"].append(asdict(item))
+
+        with open(path, "w", encoding="utf-8") as f:
+            json.dump(dct, f, ensure_ascii=False, indent=4)
