@@ -1,5 +1,6 @@
 from aircraft_part import AircraftPart
-from exceptions import DuplicateIdErr
+from exceptions import DuplicateIdErr, ItemNotFoundErr
+
 
 class Catalog:
     def __init__(self):
@@ -8,4 +9,14 @@ class Catalog:
     def add(self, item: AircraftPart) -> None:
         if item.item_id in self._items:
             raise DuplicateIdErr("Item с таким ID уже сущестувует!")
-        self._items[item._item_id] = item
+        self._items[item.item_id] = item
+
+    def get(self, item_id: str) -> AircraftPart:
+        if item_id not in self._items:
+            raise ItemNotFoundErr("Элемента с таким item_id не существует!")
+        return self._items[item_id]
+
+    def remove(self, item_id: str) -> None:
+        if item_id not in self._items:
+            raise ItemNotFoundErr("Элемента с таким item_id не существует!")
+        del self._items[item_id]
