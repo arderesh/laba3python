@@ -29,3 +29,16 @@ class Catalog:
                 res.append(item)
 
         return res
+
+    def find_by_name(self, query: str) -> list[AircraftPart]:
+        res = []
+        query = query.casefold()
+
+        for item in self._items.values():
+            if query in item.name.casefold():
+                res.append(item)
+
+        return res
+
+    def __len__(self) -> int:
+        return len(self._items)
