@@ -1,5 +1,6 @@
 from aircraft_part import AircraftPart
 from exceptions import DuplicateIdError, ItemNotFoundError
+from exceptions import UnsuportedVersion, BrokenFileError
 from collections.abc import Iterator
 import json
 from dataclasses import asdict
@@ -61,3 +62,28 @@ class Catalog:
 
         with open(path, "w", encoding="utf-8") as f:
             json.dump(dct, f, ensure_ascii=False, indent=4)
+
+    def load(self, path: str) -> None:
+        with open(path, "r", encoding="utf-8") as f:
+            doc = json.load(f)
+
+        if not isinstance(doc, dict):
+            raise BrokenFileError("Файл поврежден!")
+
+        if "format_version" not in doc or "items" not in doc:
+            raise BrokenFileError("Файл поврежден! Отсутствуют ключи format_version или items!")
+
+        if type(doc["format_version"]) != int:
+            raise BrokenFileError("Файл поврежден! Значение ключа format_version должно иметь тип int!")
+
+        if type(doc["items"]) != list:
+            raise BrokenFileError("Файл поврежден! Значение ключа items должно быть списком!")
+
+        if doc["format_version"] != 1:
+            raise UnsuportedVersion("Другая версия формата!")
+
+        new = Catalog()
+        for item in doc["items"]:
+            new.add(AircraftPart(**item))
+
+        self._items = new._items
