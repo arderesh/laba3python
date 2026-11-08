@@ -1,5 +1,6 @@
 from dataclasses import dataclass
 from exceptions import InvalidItemError
+from math import isfinite
 
 @dataclass
 class AircraftPart:
@@ -23,7 +24,8 @@ class AircraftPart:
             raise InvalidItemError("year должен иметь тип int")
         if type(self.weight) not in (int, float):
             raise InvalidItemError("weight должен иметь тип int или float")
-
+        if  not isfinite(self.weight):
+            raise InvalidItemError("weight не должен быть бесконечностью или nan")
         if self.weight <= 0:
             raise InvalidItemError("Некорректная масса!")
         if not self.item_id.strip():
