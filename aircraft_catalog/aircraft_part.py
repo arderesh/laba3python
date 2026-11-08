@@ -10,6 +10,7 @@ class AircraftPart:
     year: int
     maker: str
     weight: float
+    life_hours: int = 1000
 
     def __post_init__(self):
         if not isinstance(self.item_id, str):
@@ -38,3 +39,7 @@ class AircraftPart:
             raise InvalidItemError("Поле производитель не должно быть пустым!")
         if self.year <= 0:
             raise InvalidItemError("Год не должен быть меньше или равен 0!")
+        if type(self.life_hours) != int:
+            raise InvalidItemError("life_hours должен иметь тип int")
+        if self.life_hours <= 0:
+            raise InvalidItemError("life_hours не должен быть меньше или равен 0!")
