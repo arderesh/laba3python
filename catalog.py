@@ -51,7 +51,7 @@ class Catalog:
         return item_id in self._items
 
     def __iter__(self) -> Iterator[AircraftPart]:
-        """return-ит элементы в порядке добавления"""
+        """выводит элементы в порядке добавления"""
         return iter(self._items.values())
 
     def save(self, path: str) -> None:
