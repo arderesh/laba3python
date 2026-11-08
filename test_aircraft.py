@@ -5,7 +5,7 @@ from aircraft_catalog.catalog import Catalog
 from tempfile import TemporaryDirectory
 from pathlib import Path
 import json
-from dataclasses import asdict
+from dataclasses import asdict, FrozenInstanceError
 
 class TestAircraft(unittest.TestCase):
     def test_valid(self):
@@ -228,3 +228,86 @@ class TestCatalog(unittest.TestCase):
                 catalog.load(str(path))
 
             self.assertEqual(list(catalog), [old_part])
+
+    def test_error_encoding(self):
+        with TemporaryDirectory() as directory:
+            path = Path(directory) / "catalog.json"
+            with open(path, "wb") as f:
+                f.write(b"\xff")
+
+            catalog = Catalog()
+            with self.assertRaises(BrokenFileError):
+                catalog.load(str(path))
+
+    def test_part_frozen(self):
+        part = AircraftPart(item_id="ID-1", name="Лопатка турбины",
+                            category="Двигатель", year=2026,
+                            maker="GE", weight=5.5)
+
+        with self.assertRaises(FrozenInstanceError):
+            part.item_id = "ID-2"
+
+        self.assertEqual(part.item_id, "ID-1")
+
+    def test_invalid_name(self):
+        with self.assertRaises(InvalidItemError):
+            AircraftPart(item_id="ID-1", name=67,
+                         category="Двигатель", year=2026,
+                         maker="GE", weight=5.5)
+
+    def test_invalid_year(self):
+        with self.assertRaises(InvalidItemError):
+            AircraftPart(item_id="ID-1", name="Лопасть",
+                         category="Двигатель", year=2026.5,
+                         maker="GE", weight=5.5)
+
+    def test_nan_weight(self):
+        with self.assertRaises(InvalidItemError):
+            AircraftPart(item_id="ID-1", name="Лопасть",
+                         category="Двигатель", year=2026,
+                         maker="GE", weight=float("nan"))
+
+    def test_inf_weight(self):
+        with self.assertRaises(InvalidItemError):
+            AircraftPart(item_id="ID-1", name="Лопасть",
+                         category="Двигатель", year=2026,
+                         maker="GE", weight=float("inf"))
+
+    def test_items_error_type(self):
+        with TemporaryDirectory() as directory:
+            path = Path(directory) / "catalog.json"
+            with open(path, "w", encoding="utf-8") as f:
+                json.dump({"format_version": 1, "items": {}}, f,
+                          ensure_ascii=False, indent=4)
+
+            catalog = Catalog()
+            with self.assertRaises(BrokenFileError):
+                catalog.load(str(path))
+
+    def test_duplicate_id_in_load(self):
+        catalog = Catalog()
+        part = AircraftPart(item_id="OLD", name="Лопасть турбины",
+                            category="Двигатель", year=2026,
+                            maker="GE", weight=5.5)
+
+        catalog.add(part)
+
+        part1 = AircraftPart(item_id="NEW", name="Лопасть",
+                            category="Двигатель", year=2026,
+                            maker="GE", weight=5.5)
+        part2 = AircraftPart(item_id="NEW", name="Свеча зажигания",
+                            category="Двигатель", year=2026,
+                            maker="GE", weight=5.5)
+
+        slovar = {"format_version": 1, "items": [asdict(part1), asdict(part2)]}
+
+        with TemporaryDirectory() as directory:
+            path = Path(directory) / "catalog.json"
+            with open(path, "w", encoding="utf-8") as f:
+                json.dump(slovar, f, ensure_ascii=False, indent=4)
+
+            with self.assertRaises(BrokenFileError):
+                catalog.load(str(path))
+
+            self.assertEqual(list(catalog), [part])
+
