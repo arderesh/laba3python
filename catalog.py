@@ -84,6 +84,9 @@ class Catalog:
 
         new = Catalog()
         for item in doc["items"]:
+            if not isinstance(item, dict):
+                raise BrokenFileError("Items должен быть словарем!")
+
             new.add(AircraftPart(**item))
 
         self._items = new._items
