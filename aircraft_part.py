@@ -2,7 +2,7 @@ from dataclasses import dataclass
 from exceptions import InvalidItemError
 from math import isfinite
 
-@dataclass
+@dataclass(frozen=True)
 class AircraftPart:
     item_id: str
     name: str
