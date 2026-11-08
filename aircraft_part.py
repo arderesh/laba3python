@@ -11,6 +11,19 @@ class AircraftPart:
     weight: float
 
     def __post_init__(self):
+        if not isinstance(self.item_id, str):
+            raise InvalidItemError("item_id должен быть строкой")
+        if not isinstance(self.name, str):
+            raise InvalidItemError("name должно быть строкой")
+        if not isinstance(self.category, str):
+            raise InvalidItemError("category должно быть строкой")
+        if not isinstance(self.maker, str):
+            raise InvalidItemError("maker должно быть строкой")
+        if type(self.year) != int:
+            raise InvalidItemError("year должен иметь тип int")
+        if type(self.weight) not in (int, float):
+            raise InvalidItemError("weight должен иметь тип int или float")
+
         if self.weight <= 0:
             raise InvalidItemError("Некорректная масса!")
         if not self.item_id.strip():
