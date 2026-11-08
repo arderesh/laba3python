@@ -1,5 +1,5 @@
 from aircraft_part import AircraftPart
-from exceptions import DuplicateIdError, ItemNotFoundError
+from exceptions import DuplicateIdError, ItemNotFoundError, InvalidItemError
 from exceptions import UnsuportedVersion, BrokenFileError
 from collections.abc import Iterator
 import json
@@ -64,8 +64,11 @@ class Catalog:
             json.dump(dct, f, ensure_ascii=False, indent=4)
 
     def load(self, path: str) -> None:
-        with open(path, "r", encoding="utf-8") as f:
-            doc = json.load(f)
+        try:
+            with open(path, "r", encoding="utf-8") as f:
+                doc = json.load(f)
+        except json.JSONDecodeError as error:
+            raise BrokenFileError("Некорректный JSON") from error
 
         if not isinstance(doc, dict):
             raise BrokenFileError("Файл поврежден!")
@@ -84,6 +87,11 @@ class Catalog:
 
         new = Catalog()
         for item in doc["items"]:
-            new.add(AircraftPart(**item))
+            if not isinstance(item, dict):
+                raise BrokenFileError("Каждый элемент Items должен быть словарем!")
+            try:
+                new.add(AircraftPart(**item))
+            except (TypeError, InvalidItemError, DuplicateIdError) as error:
+                raise BrokenFileError("Некорректная запись детали") from error
 
         self._items = new._items
