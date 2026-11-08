@@ -1,6 +1,6 @@
-from aircraft_part import AircraftPart
-from exceptions import DuplicateIdError, ItemNotFoundError, InvalidItemError
-from exceptions import UnsuportedVersion, BrokenFileError
+from .aircraft_part import AircraftPart
+from .exceptions import DuplicateIdError, ItemNotFoundError, InvalidItemError
+from .exceptions import UnsuportedVersion, BrokenFileError
 from collections.abc import Iterator
 import json
 from dataclasses import asdict

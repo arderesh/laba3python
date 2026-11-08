@@ -1,5 +1,5 @@
 from dataclasses import dataclass
-from exceptions import InvalidItemError
+from .exceptions import InvalidItemError
 from math import isfinite
 
 @dataclass(frozen=True)
