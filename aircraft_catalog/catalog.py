@@ -67,7 +67,7 @@ class Catalog:
         try:
             with open(path, "r", encoding="utf-8") as f:
                 doc = json.load(f)
-        except json.JSONDecodeError as error:
+        except (json.JSONDecodeError, UnicodeDecodeError) as error:
             raise BrokenFileError("Некорректный JSON") from error
 
         if not isinstance(doc, dict):
