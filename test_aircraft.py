@@ -5,6 +5,7 @@ from catalog import Catalog
 from tempfile import TemporaryDirectory
 from pathlib import Path
 import json
+from dataclasses import asdict
 
 class TestAircraft(unittest.TestCase):
     def test_valid(self):
@@ -199,3 +200,31 @@ class TestCatalog(unittest.TestCase):
             with self.assertRaises(BrokenFileError):
                 catalog.load(str(path))
 
+    def test_load_auto(self):
+        catalog = Catalog()
+
+        old_part = AircraftPart(item_id="OLD", name="Лопасть турбины",
+                            category="Двигатель", year=2026,
+                            maker="GE", weight=5.5)
+        catalog.add(old_part)
+
+        part1 = asdict(AircraftPart(item_id="NEW", name="Лопасть",
+                            category="Двигатель", year=2026,
+                            maker="GE", weight=5.5))
+
+        part2 = asdict(AircraftPart(item_id="BAD", name="Свеча зажигания",
+                            category="Двигатель", year=2026,
+                            maker="GE", weight=5.5))
+        part2["weight"] = -5.5
+
+        slovar = {"format_version": 1, "items": [part1, part2]}
+
+        with TemporaryDirectory() as directory:
+            path = Path(directory) / "catalog.json"
+            with open(path, "w", encoding="utf-8") as f:
+                json.dump(slovar, f, ensure_ascii=False, indent=4)
+
+            with self.assertRaises(BrokenFileError):
+                catalog.load(str(path))
+
+            self.assertEqual(list(catalog), [old_part])
