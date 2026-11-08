@@ -160,7 +160,7 @@ class TestCatalog(unittest.TestCase):
 
         part1 = AircraftPart(item_id="ID-1", name="Лопасть турбины",
                             category="Двигатель", year=2026,
-                            maker="GE", weight=5.5)
+                            maker="GE", weight=5.5, life_hours=300)
         part2 = AircraftPart(item_id="ID-2", name="Диск турбины",
                             category="Двигатель", year=2026,
                             maker="GE", weight=10.0)
@@ -311,3 +311,52 @@ class TestCatalog(unittest.TestCase):
 
             self.assertEqual(list(catalog), [part])
 
+    def test_life_hours_defolt_1000(self):
+        part = AircraftPart(item_id="ID-1", name="Лопатка турбины",
+                            category="Двигатель", year=2026,
+                            maker="GE", weight=5.5)
+
+        self.assertEqual(part.life_hours, 1000)
+
+    def test_life_hours_save(self):
+        part = AircraftPart(item_id="ID-1", name="Лопатка турбины",
+                            category="Двигатель", year=2026,
+                            maker="GE", weight=5.5, life_hours=300)
+
+        self.assertEqual(part.life_hours, 300)
+
+    def test_zero_in_life_hours(self):
+        with self.assertRaises(InvalidItemError):
+            AircraftPart(item_id="ID-1", name="Лопатка турбины",
+                         category="Двигатель", year=2026,
+                         maker="GE", weight=5.5, life_hours=0)
+
+    def test_bool_in_life_hours(self):
+        with self.assertRaises(InvalidItemError):
+            AircraftPart(item_id="ID-1", name="Лопатка турбины",
+                         category="Двигатель", year=2026,
+                         maker="GE", weight=5.5, life_hours=True)
+
+    def test_negative_life_hours(self):
+        with self.assertRaises(InvalidItemError):
+            AircraftPart(item_id="ID-1", name="Лопатка турбины",
+                         category="Двигатель", year=2026,
+                         maker="GE", weight=5.5, life_hours=-100)
+
+    def test_load_without_life_hours(self):
+        catalog = Catalog()
+
+        part1 = asdict(AircraftPart(item_id="NEW", name="Лопасть",
+                            category="Двигатель", year=2026,
+                            maker="GE", weight=5.5))
+        del part1["life_hours"]
+        slovar = {"format_version": 1, "items": [part1]}
+
+        with TemporaryDirectory() as directory:
+            path = Path(directory) / "catalog.json"
+            with open(path, "w", encoding="utf-8") as f:
+                json.dump(slovar, f, ensure_ascii=False, indent=4)
+
+            catalog.load(str(path))
+            loaded_part = catalog.get("NEW")
+            self.assertEqual(loaded_part.life_hours, 1000)
