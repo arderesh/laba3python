@@ -1,7 +1,7 @@
 import unittest
-from aircraft_part import AircraftPart
-from exceptions import InvalidItemError, DuplicateIdError, ItemNotFoundError, UnsuportedVersion, BrokenFileError
-from catalog import Catalog
+from aircraft_catalog.aircraft_part import AircraftPart
+from aircraft_catalog.exceptions import InvalidItemError, DuplicateIdError, ItemNotFoundError, UnsuportedVersion, BrokenFileError
+from aircraft_catalog.catalog import Catalog
 from tempfile import TemporaryDirectory
 from pathlib import Path
 import json
